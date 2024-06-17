@@ -5,26 +5,47 @@
 
   outputs = { nixpkgs, disko, ... }:
   {
-    imports = [ ./common/network.nix ];
-    networkSettings = {
-      hostname = "master3";
-      privateIP = "10.22.20.12";
-    };
+      nixosConfigurations =
+        let
+          nixos = { system, hostname }: nixpkgs.lib.nixosSystem {
+            system = system;
+            modules = [
+              disko.nixosModules.disko
+              ./hosts/${hostname}
+            ];
+          };
+        in
+        {
+          master1 = nixos {
+            system = "x86_64-linux";
+            hostname = "master1";
+          };
 
-    nixosConfigurations.k3s-master = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        disko.nixosModules.disko
-        ./master/configuration.nix
-      ];
-    };
+          master2 = nixos {
+            system = "x86_64-linux";
+            hostname = "master2";
+          };
 
-    nixosConfigurations.k3s-worker = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        disko.nixosModules.disko
-        ./worker/configuration.nix
-      ];
-    };
+          master3 = nixos {
+            system = "x86_64-linux";
+            hostname = "master3";
+          };
+
+          worker1 = nixos {
+            system = "x86_64-linux";
+            hostname = "worker1";
+          };
+
+          worker2 = nixos {
+            system = "x86_64-linux";
+            hostname = "worker2";
+          };
+
+          worker3 = nixos {
+            system = "x86_64-linux";
+            hostname = "worker3";
+          };
+        };
+
   };
 }

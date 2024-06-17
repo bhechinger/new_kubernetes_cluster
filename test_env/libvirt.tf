@@ -49,8 +49,11 @@ locals {
   mem_local_var        = [
     for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB * 8)
   ]
-  cpu_local_var        = [
+  cpu_local_var = [
     for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.cpu : var.cpu * 2)
+  ]
+  ip_offset = [
+    for name in local.vm_common_list_count :(strcontains(name, local.master) ? 11 : 21 - length(var.k8s-master-hostname))
   ]
 }
 
@@ -77,7 +80,7 @@ resource "libvirt_volume" "live_cd" {
   name           = "live_cd.${local.vm_common_list_count[count.index]}"
   pool           = libvirt_pool.development.name
   base_volume_id = libvirt_volume.ubuntu24.id
-  size   = 107374182400
+  size           = 107374182400
 }
 
 resource "libvirt_volume" "disk_1" {
@@ -125,8 +128,8 @@ resource "libvirt_network" "kube-public" {
 
 resource "libvirt_network" "kube-private" {
   name      = "kube-private"
-  mode      = "none"
-#   addresses = ["10.22.23.0/24"]
+  mode = "none"
+  #   addresses = ["10.22.23.0/24"]
   autostart = true
 }
 
@@ -147,7 +150,7 @@ resource "libvirt_domain" "domain-k3s" {
 
   network_interface {
     network_id     = libvirt_network.kube-public.id
-    addresses      = ["10.22.20.${count.index+10}"]
+    addresses      = ["10.22.20.${count.index+local.ip_offset[count.index]}"]
     wait_for_lease = true
   }
 

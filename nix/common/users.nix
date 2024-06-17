@@ -5,6 +5,7 @@
     wonko = {
       isNormalUser = true;
       description = "Brian Hechinger";
+      password = "password";
       extraGroups = [
         "wheel"
         "users"
