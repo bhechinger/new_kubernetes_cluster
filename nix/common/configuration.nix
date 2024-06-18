@@ -1,12 +1,16 @@
-{ modulesPath, config, lib, pkgs, ... }: {
+{ modulesPath, config, lib, pkgs, ... }:
+
+let
+  cfg = config.local.k3s;
+in
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
     ../common/users.nix
     ../common/services.nix
-    ./disk-config.nix
+    ../disk-config/${cfg.role}.nix
   ];
-
   boot.loader.grub = {
     # no need to set devices, disko will add all devices that have a EF02 partition to the list already
     # devices = [ ];
@@ -14,14 +18,12 @@
     efiInstallAsRemovable = true;
   };
 
+  # Needed for Rook/Ceph
+  boot.kernelModules = [ "rbd" ];
+
   environment.systemPackages = map lib.lowPrio [
     pkgs.curl
     pkgs.gitMinimal
-  ];
-
-  users.users.root.openssh.authorizedKeys.keys = [
-    # change this to your ssh key
-    (builtins.readFile ../ssh/yubikey.pub)
   ];
 
   system.stateVersion = "24.05";

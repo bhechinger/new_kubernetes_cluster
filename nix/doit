@@ -1,0 +1,1 @@
+nix run github:nix-community/nixos-anywhere -- --flake .#master1 wonko@10.22.20.11

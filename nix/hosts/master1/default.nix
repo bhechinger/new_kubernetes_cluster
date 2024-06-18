@@ -1,14 +1,27 @@
 { lib, system, ...}:
 {
   imports = [
-    (import ../../common/network.nix {
-      hostname = "master1";
-      privateIP = "10.22.20.11";
-      publicNIC = "ens3";
-      privateNIC = "ens4";
-    } )
+    ../../common/options.nix {
+      local = {
+        k3s = {
+          role = "server";
+          token = "ReallyBadToken";
+          serverIP = "";
+          clusterInit = true;
+        };
 
-    ../../master/configuration.nix
+        network = {
+          hostname = "master1";
+          privateIP = "10.22.20.11";
+          publicNIC = "ens3";
+          privateNIC = "ens4";
+        };
+      };
+    }
+
+    ../../common/configuration.nix
+    ../../common/network.nix
+    ../../common/k3s.nix
   ];
 
 }

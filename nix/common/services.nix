@@ -1,4 +1,5 @@
-{ inputs, config, lib, pkgs, pkgs-brian, smc, ... }:
+{ config, ... }:
+
 {
   services = {
 #    zerotierone = {

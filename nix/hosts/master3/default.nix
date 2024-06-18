@@ -8,7 +8,16 @@
       privateNIC = "ens4";
     } )
 
-    ../../master/configuration.nix
+    (import ../../common/k3s.nix {
+      role = "master";
+      token = "";
+      serverAddr = ""; # Ignored for init node
+      clusterInit = true;
+    })
+
+    (import ../../common/configuration.nix {
+      role = "master";
+    })
   ];
 
 }

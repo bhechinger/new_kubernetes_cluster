@@ -15,5 +15,10 @@
         (builtins.readFile ../ssh/yubikey.pub)
       ];
     };
+
+    root.openssh.authorizedKeys.keys = [
+      # change this to your ssh key
+      (builtins.readFile ../ssh/yubikey.pub)
+    ];
   };
 }

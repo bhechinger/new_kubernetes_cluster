@@ -1,23 +1,26 @@
-{ hostname, privateIP, publicNIC, privateNIC, ...}: { config, ... }:
+{ config, ... }:
 
+let
+  cfg = config.local.network;
+in
 {
-  config.networking = {
-    hostName = hostname;
+  networking = {
+    hostName = cfg.hostname;
     domain = "4amlunch.net";
     useDHCP = false;
 
     vlans = {
-      vlan4000 = { id=4000; interface=publicNIC; };
+      vlan4000 = { id=4000; interface=cfg.privateNIC; };
     };
 
     interfaces = {
       ens3.useDHCP = true;
       vlan4000.ipv4.addresses = [{
-        address = privateIP;
+        address = cfg.privateIP;
         prefixLength = 24;
       }];
     };
 
-    firewall.enable = true;
+    firewall.enable = false;
   };
 }
