@@ -36,7 +36,7 @@ variable "rescue-image" {
 }
 
 variable "domain" { default = "local" }
-variable "ramMB" { default = 1024*2 }
+variable "ramMB" { default = 1024*4 }
 variable "cpu" { default = 2 }
 
 locals {
@@ -47,7 +47,7 @@ locals {
   # if hostname contains "m" - use default VAR for masters, otherwise modify VAR( or use another var- for images) for workers
   image_path           = var.rescue-image
   mem_local_var        = [
-    for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB * 8)
+    for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB * 4)
   ]
   cpu_local_var = [
     for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.cpu : var.cpu * 2)

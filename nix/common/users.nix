@@ -1,5 +1,3 @@
-{ inputs, config, lib, pkgs, pkgs-brian, smc, ... }:
-
 {
   users.users = {
     wonko = {

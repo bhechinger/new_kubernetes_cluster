@@ -1,13 +1,15 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/24.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs-brian.url = "github:bhechinger/nixpkgs/disable-kube-proxy-cilium";
   inputs.disko.url = "github:nix-community/disko";
   inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { nixpkgs, disko, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-brian, disko, ... }:
   {
       nixosConfigurations =
         let
           nixos = { system, hostname }: nixpkgs.lib.nixosSystem {
+            specialArgs.inputs = inputs;
             system = system;
             modules = [
               disko.nixosModules.disko

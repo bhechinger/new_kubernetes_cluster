@@ -2,6 +2,7 @@
 
 let
   cfg = config.local.network;
+  vlan = "vlan" + toString cfg.vlanID;
 in
 {
   networking = {
@@ -10,12 +11,15 @@ in
     useDHCP = false;
 
     vlans = {
-      vlan4000 = { id=4000; interface=cfg.privateNIC; };
+      "${vlan}" = {
+        id = cfg.vlanID;
+        interface = cfg.privateNIC;
+      };
     };
 
     interfaces = {
-      ens3.useDHCP = true;
-      vlan4000.ipv4.addresses = [{
+      "${cfg.publicNIC}".useDHCP = true;
+      "${vlan}".ipv4.addresses = [{
         address = cfg.privateIP;
         prefixLength = 24;
       }];

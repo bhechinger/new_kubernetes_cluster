@@ -1,14 +1,15 @@
-{ config, ... }:
+{ lib, config, ... }:
 
+with lib;
 let
-  cfg = config.local.k3s;
+  cfg = config.local.rke2;
 in
 {
-  services.k3s = {
+  services.rke2 = {
     enable = true;
     role = cfg.role;
     token = cfg.token;
+    extraFlags = cfg.extraFlags;
     serverAddr = "https://${cfg.serverIP}:6443";
-    clusterInit = cfg.clusterInit;
   };
 }

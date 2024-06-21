@@ -1,16 +1,16 @@
-{ modulesPath, config, lib, pkgs, ... }:
+{ role }: { modulesPath, config, lib, pkgs, ... }:
 
-let
-  cfg = config.local.k3s;
-in
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
-    ../common/users.nix
-    ../common/services.nix
-    ../disk-config/${cfg.role}.nix
+    ./users.nix
+    ./services.nix
+    ./network.nix
+    ./rke2-${role}.nix
+    ../disk-config/${role}.nix
   ];
+
   boot.loader.grub = {
     # no need to set devices, disko will add all devices that have a EF02 partition to the list already
     # devices = [ ];

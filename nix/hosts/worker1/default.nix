@@ -1,23 +1,26 @@
-{ lib, system, ...}:
+let
+  role = "agent";
+in
 {
   imports = [
-    (import ../../common/network.nix {
-      hostname = "worker1";
-      privateIP = "10.22.20.21";
-      publicNIC = "ens3";
-      privateNIC = "ens4";
-    } )
+    ../../common/options.nix {
+      local = {
+        rke2 = {
+          role = role;
+          token = "ReallyBadToken";
+          serverIP = "10.22.30.11";
+          extraFlags = ["--disable-kube-proxy" "--cluster-cidr=10.24.0.0/16"];
+        };
 
-    (import ../../common/k3s.nix {
-      role = "master";
-      token = "";
-      serverAddr = ""; # Ignored for init node
-      clusterInit = true;
-    })
+        network = {
+          hostname = "worker1";
+          privateIP = "10.22.30.21";
+          publicNIC = "ens3";
+          privateNIC = "ens4";
+        };
+      };
+    }
 
-    (import ../../common/configuration.nix {
-      role = "worker";
-    })
+    (import ../../common/configuration.nix { inherit role; })
   ];
-
 }

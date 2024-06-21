@@ -3,7 +3,7 @@
 with lib;
 {
   options.local = {
-    k3s = {
+    rke2 = {
       role = mkOption {
         type = types.str;
       };
@@ -20,6 +20,11 @@ with lib;
       clusterInit = mkOption {
         default = false;
         type = types.bool;
+      };
+
+      extraFlags = mkOption {
+        default = [];
+        type = types.listOf types.str;
       };
     };
 
@@ -38,6 +43,11 @@ with lib;
 
       privateNIC = mkOption {
         type = types.str;
+      };
+
+      vlanID = mkOption {
+        default = 4000;
+        type = types.int;
       };
     };
   };
