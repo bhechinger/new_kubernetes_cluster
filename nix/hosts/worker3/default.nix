@@ -7,9 +7,9 @@ in
       local = {
         rke2 = {
           role = role;
-          token = "ReallyBadToken";
-          serverIP = "10.22.30.11";
-          extraFlags = ["--disable-kube-proxy" "--cluster-cidr=10.24.0.0/16"];
+          tokenFile = "/join.token";
+          initMaster = "master1.4amlunch.net";
+#          extraFlags = ["--disable-kube-proxy" "--cluster-cidr=10.24.0.0/16"];
         };
 
         network = {
@@ -24,3 +24,6 @@ in
     (import ../../common/configuration.nix { inherit role; })
   ];
 }
+
+#--node-ip value, -i value                     (agent/networking) IPv4/IPv6 addresses to advertise for node
+#--node-external-ip value                      (agent/networking) IPv4/IPv6 external IP addresses to advertise for node

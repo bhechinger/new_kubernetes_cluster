@@ -5,26 +5,27 @@ with lib;
   options.local = {
     rke2 = {
       role = mkOption {
-        type = types.str;
+        type = types.enum [ "server" "agent" ];
       };
 
-      token = mkOption {
-        type = types.str;
+      tokenFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
       };
 
-      serverIP = mkOption {
+      initMaster = mkOption {
+        type = types.str;
         default = "";
-        type = types.str;
       };
 
       clusterInit = mkOption {
-        default = false;
         type = types.bool;
+        default = false;
       };
 
       extraFlags = mkOption {
-        default = [];
         type = types.listOf types.str;
+        default = [];
       };
     };
 

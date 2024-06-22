@@ -7,9 +7,8 @@ in
       local = {
         rke2 = {
           role = role;
-          token = "ReallyBadToken";
           clusterInit = true;
-          extraFlags = ["--disable-kube-proxy" "--cluster-cidr=10.24.0.0/16"];
+          extraFlags = ["--cluster-cidr=10.24.0.0/16"];
         };
 
         network = {

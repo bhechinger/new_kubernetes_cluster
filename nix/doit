@@ -1,24 +1,14 @@
 #!/usr/bin/env bash
 
-declare -A hosts=(
-  ["master1"]="10.22.20.11"
-  ["master2"]="10.22.20.12"
-  ["master3"]="10.22.20.13"
-  ["worker1"]="10.22.20.21"
-  ["worker2"]="10.22.20.22"
-  ["worker3"]="10.22.20.23"
-)
+./deploy master1
+echo -n "Press enter when node is up"
+read -r
 
-if [ -z ${1} ]; then
-  echo "You're doing it wrong"
-  exit
-fi
+./deploy master1 copy
+./deploy master1 copy-token
 
-if [ "${2}" = "copy" ]; then
-  scp root@"${hosts[${1}]}":/etc/rancher/rke2/rke2.yaml "${1}".yaml
-  sed -i "s/127.0.0.1/${hosts[${1}]}/g" "${1}".yaml
-  exit 0
-fi
+ADDITIONAL_NODES=('master2' 'master3' 'worker1' 'worker2' 'worker3')
 
-nix run github:nix-community/nixos-anywhere -- --flake .#"${1}" wonko@"${hosts[${1}]}"
-
+for node in "${ADDITIONAL_NODES[@]}"; do
+  echo ./deploy "${node}"
+done

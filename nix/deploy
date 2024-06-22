@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+declare -A hosts=(
+  ["master1"]="10.22.20.11"
+  ["master2"]="10.22.20.12"
+  ["master3"]="10.22.20.13"
+  ["worker1"]="10.22.20.21"
+  ["worker2"]="10.22.20.22"
+  ["worker3"]="10.22.20.23"
+)
+
+if [ -z ${1} ]; then
+  echo "You're doing it wrong"
+  exit
+fi
+
+if [ "${2}" = "copy" ]; then
+  scp root@"${hosts[${1}]}":/etc/rancher/rke2/rke2.yaml "${1}".yaml
+  sed -i "s/127.0.0.1/${hosts[${1}]}/g" "${1}".yaml
+  exit 0
+fi
+
+if [ "${2}" = "copy-token" ]; then
+  mkdir -p extra_files
+  scp root@"${hosts[${1}]}":/var/lib/rancher/rke2/server/node-token extra_files/join.token
+  exit 0
+fi
+
+nix run github:nix-community/nixos-anywhere -- --flake .#"${1}" --extra-files ./extra_files wonko@"${hosts[${1}]}"
+

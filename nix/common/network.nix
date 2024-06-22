@@ -26,5 +26,14 @@ in
     };
 
     firewall.enable = false;
+
+    extraHosts = ''
+      10.22.20.11 master1.4amlunch.net master1
+      10.22.20.12 master2.4amlunch.net master2
+      10.22.20.13 master3.4amlunch.net master3
+      10.22.20.21 worker1.4amlunch.net worker1
+      10.22.20.21 worker2.4amlunch.net worker2
+      10.22.20.21 worker3.4amlunch.net worker3
+    '';
   };
 }

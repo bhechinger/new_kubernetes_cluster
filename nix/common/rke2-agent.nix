@@ -8,8 +8,8 @@ in
   services.rke2 = {
     enable = true;
     role = cfg.role;
-    token = cfg.token;
+    tokenFile = cfg.tokenFile;
     extraFlags = cfg.extraFlags;
-    serverAddr = "https://${cfg.serverIP}:6443";
+    serverAddr = "https://${cfg.initMaster}:9345";
   };
 }
