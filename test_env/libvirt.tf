@@ -21,12 +21,12 @@ variable "vm_condition_poweron" {
 
 # variables that can be overriden
 variable "k8s-master-hostname" {
-  type    = list(string)
+  type = list(string)
   default = ["master1", "master2", "master3"]
 }
 
 variable "k8s-worker-hostname" {
-  type    = list(string)
+  type = list(string)
   default = ["worker1", "worker2", "worker3"]
 }
 
@@ -40,20 +40,26 @@ variable "ramMB" { default = 1024*4 }
 variable "cpu" { default = 2 }
 
 locals {
-  master               = "master"
-  worker               = "worker"
+  master        = "master"
+  worker        = "worker"
+  disk_master   = 40*1073741824
+  disk_worker   = 500*1073741824
   vm_common_list_count = concat(var.k8s-master-hostname, var.k8s-worker-hostname)
   # creates list with condition
   # if hostname contains "m" - use default VAR for masters, otherwise modify VAR( or use another var- for images) for workers
-  image_path           = var.rescue-image
-  mem_local_var        = [
+  image_path    = var.rescue-image
+  mem_local_var = [
     for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB * 4)
   ]
   cpu_local_var = [
     for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.cpu : var.cpu * 2)
   ]
+  disk_size = [
+    for name in local.vm_common_list_count :(strcontains(name, local.master) ? local.disk_master : local.disk_worker)
+  ]
   ip_offset = [
-    for name in local.vm_common_list_count :(strcontains(name, local.master) ? 11 : 21 - length(var.k8s-master-hostname))
+    for name in local.vm_common_list_count :
+    (strcontains(name, local.master) ? 11 : 21 - length(var.k8s-master-hostname))
   ]
 }
 
@@ -75,24 +81,24 @@ resource "libvirt_volume" "ubuntu24" {
   format = "qcow2"
 }
 
-resource "libvirt_volume" "live_cd" {
-  count          = length(local.vm_common_list_count)
-  name           = "live_cd.${local.vm_common_list_count[count.index]}"
+resource "libvirt_volume" "disk_1" {
+  count = length(local.vm_common_list_count)
+  name           = "disk_1.${local.vm_common_list_count[count.index]}"
   pool           = libvirt_pool.development.name
   base_volume_id = libvirt_volume.ubuntu24.id
-  size           = 107374182400
+  size           = local.disk_size[count.index]
 }
 
-resource "libvirt_volume" "disk_1" {
-  count  = length(local.vm_common_list_count)
+resource "libvirt_volume" "disk_2" {
+  count = length(local.vm_common_list_count)
   name   = "os_image.disk1.${local.vm_common_list_count[count.index]}"
   pool   = libvirt_pool.development.name
   format = "qcow2"
-  size   = 107374182400
+  size   = local.disk_size[count.index]
 }
 
 resource "libvirt_cloudinit_disk" "commoninit" {
-  count          = length(local.vm_common_list_count)
+  count = length(local.vm_common_list_count)
   name           = "${local.vm_common_list_count[count.index]}-commoninit.iso"
   pool           = libvirt_pool.development.name
   user_data      = data.template_file.user_data[count.index].rendered
@@ -100,11 +106,11 @@ resource "libvirt_cloudinit_disk" "commoninit" {
 }
 
 data "template_file" "user_data" {
-  count    = length(local.vm_common_list_count)
+  count = length(local.vm_common_list_count)
   template = file("${path.module}/cloud_init_ubuntu.cfg")
   vars = {
     hostname = element(local.vm_common_list_count, count.index)
-    fqdn     = "${local.vm_common_list_count[count.index]}.${var.domain}"
+    fqdn = "${local.vm_common_list_count[count.index]}.${var.domain}"
   }
 }
 
@@ -128,29 +134,33 @@ resource "libvirt_network" "kube-public" {
 
 resource "libvirt_network" "kube-private" {
   name      = "kube-private"
-  mode = "none"
-  #   addresses = ["10.22.23.0/24"]
+  mode      = "none"
   autostart = true
 }
 
 # Create the machine
 resource "libvirt_domain" "domain-k3s" {
-  count  = length(local.vm_common_list_count)
-  name   = local.vm_common_list_count[count.index]
-  running = var.vm_condition_poweron
-  # if list element contains "m"- master node, use defaults, otherwise (worker)- multiply *4
-  memory = local.mem_local_var[count.index]
-  vcpu   = local.cpu_local_var[count.index]
-  disk {
-    volume_id = element(libvirt_volume.live_cd.*.id, count.index)
+  count = length(local.vm_common_list_count)
+  name     = local.vm_common_list_count[count.index]
+#   firmware = "/run/libvirt/nix-ovmf/OVMF_CODE.fd"
+  machine  = "q35"
+  xml {
+    xslt = file("cdrom-model.xsl")
   }
+  running  = var.vm_condition_poweron
+  # if list element contains "m"- master node, use defaults, otherwise (worker)- multiply *4
+  memory   = local.mem_local_var[count.index]
+  vcpu     = local.cpu_local_var[count.index]
   disk {
     volume_id = element(libvirt_volume.disk_1.*.id, count.index)
+  }
+  disk {
+    volume_id = element(libvirt_volume.disk_2.*.id, count.index)
   }
 
   network_interface {
     network_id     = libvirt_network.kube-public.id
-    addresses      = ["10.22.20.${count.index+local.ip_offset[count.index]}"]
+    addresses = ["10.22.20.${count.index+local.ip_offset[count.index]}"]
     wait_for_lease = true
   }
 

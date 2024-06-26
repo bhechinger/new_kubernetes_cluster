@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+declare -r -A hosts=(
+  ["master1"]="10.22.20.11"
+  ["master2"]="10.22.20.12"
+  ["master3"]="10.22.20.13"
+  ["worker1"]="10.22.20.21"
+  ["worker2"]="10.22.20.22"
+  ["worker3"]="10.22.20.23"
+)
+
+get_ip() {
+  if [ -z "${1}" ]; then
+    echo "You're doing it wrong"
+    exit
+  fi
+
+  if [ -z "${hosts[${1}]}" ]; then
+    echo "No such host: ${1}"
+    return 1
+  fi
+
+  echo "${hosts[${1}]}"
+}

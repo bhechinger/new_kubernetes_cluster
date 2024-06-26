@@ -15,8 +15,8 @@ in
         network = {
           hostname = "master2";
           privateIP = "10.22.30.12";
-          publicNIC = "ens3";
-          privateNIC = "ens4";
+          publicNIC = "enp1s0";
+          privateNIC = "enp2s0";
         };
       };
     }

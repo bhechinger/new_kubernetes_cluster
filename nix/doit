@@ -1,14 +1,28 @@
 #!/usr/bin/env bash
+. functions/kube
+. functions/hosts
 
+if ! HOST_IP=$(get_ip "master1"); then
+  echo "Error getting ip: ${HOST_IP}"
+  exit 1
+fi
+
+echo "Deploying to master1"
 ./deploy master1
-echo -n "Press enter when node is up"
-read -r
-
+echo "Copying kubeconfig from master1"
 ./deploy master1 copy
+echo "Copying join token from master1"
 ./deploy master1 copy-token
+
+echo "Waiting for kubeapi port to open"
+wait_for_connection "${HOST_IP}" 6443
+
+echo "Waiting for kubernetes to be ready on master1"
+wait_for_ready master1 master1.yaml
 
 ADDITIONAL_NODES=('master2' 'master3' 'worker1' 'worker2' 'worker3')
 
 for node in "${ADDITIONAL_NODES[@]}"; do
-  echo ./deploy "${node}"
+  echo "Deploying to ${node}"
+  ./deploy "${node}"
 done

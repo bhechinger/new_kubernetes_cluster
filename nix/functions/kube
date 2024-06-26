@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+wait_for_connection() {
+  HOST="${1}"
+  PORT="${2}"
+
+  if [ -z "${HOST}" ] || [ -z "${PORT}" ]; then
+    echo "You're doing it wrong"
+    exit 1
+  fi
+
+  until printf "" 2>>/dev/null >>/dev/tcp/"${HOST}"/"${PORT}"; do
+    sleep 1;
+  done
+}
+
+wait_for_ready() {
+  KUBE_STATUS="init"
+  HOST="${1}"
+  export KUBECONFIG="${2}"
+
+  if [ -z "${HOST}" ] || [ -z "${KUBECONFIG}" ]; then
+    echo "You're doing it wrong"
+    exit 1
+  fi
+
+#  CHECK_HOST=$(kubectl get nodes -ojson | jq -r ".items | map(select(.metadata.name == \"${HOST}\")) | .[].metadata.name")
+#  if [ "${CHECK_HOST}" != "${HOST}" ]; then
+#    echo "Unknown host: ${HOST}"
+#    exit 2
+#  fi
+
+  OLD_KUBE_STATUS=""
+  while [ "${KUBE_STATUS}" != "KubeletReady" ]; do
+    KUBE_STATUS=$(kubectl get nodes -ojson | jq -r ".items | map(select(.metadata.name == \"${HOST}\")) | .[].status.conditions[-1].reason")
+    if [ "${OLD_KUBE_STATUS}" != "${KUBE_STATUS}" ]; then
+      echo "${HOST} status is: ${KUBE_STATUS}"
+      OLD_KUBE_STATUS=KUBE_STATUS
+    fi
+    sleep 1
+  done
+
+  echo "${HOST} ready!"
+}

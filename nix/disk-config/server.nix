@@ -8,12 +8,12 @@
       content = {
         type = "gpt";
         partitions = {
-          boot = {
+          BOOT = {
             name = "boot";
             size = "1M";
             type = "EF02";
           };
-          esp = {
+          ESP = {
             name = "ESP";
             size = "500M";
             type = "EF00";
