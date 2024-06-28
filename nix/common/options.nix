@@ -37,6 +37,10 @@ with lib;
         type = types.str;
       };
 
+      privateCIDR = mkOption {
+        type = types.str;
+      };
+
       publicNIC = mkOption {
         type = types.str;
       };
@@ -50,12 +54,12 @@ with lib;
         type = types.int;
       };
 
-      clusterCIDR = mkdOption {
+      clusterCIDR = mkOption {
         type = types.str;
         default = "10.42.0.0/16";
       };
 
-      serviceCIDR = mkdOption {
+      serviceCIDR = mkOption {
         type = types.str;
         default = "10.43.0.0/16";
       };
