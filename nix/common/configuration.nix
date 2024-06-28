@@ -14,14 +14,11 @@
   boot.loader.grub = {
     # no need to set devices, disko will add all devices that have a EF02 partition to the list already
     # devices = [ ];
-#    efiSupport = true;
-#    efiInstallAsRemovable = true;
   };
 
   environment.systemPackages = map lib.lowPrio [
     pkgs.curl
     pkgs.gitMinimal
-    pkgs.e2fsprogs
   ];
 
   system.stateVersion = "24.05";

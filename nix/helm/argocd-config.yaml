@@ -1,0 +1,46 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  valuesContent: |-
+    global:
+      domain: argocd.4amlunch.net
+      logging:
+        format: json
+      networkPolicy:
+        create: true
+    configs:
+      cm:
+        dex.config: |
+          connectors:
+            - type: github
+              id: github
+              name: GitHub
+              config:
+                clientID: aabbccddeeff00112233
+                clientSecret: $dex.github.clientSecret # Alternatively $<some_K8S_secret>:dex.github.clientSecret
+                orgs:
+                  - name: your-github-org
+      params:
+        server.insecure: true
+      rbac:
+        policy.csv: ''
+        # policy.csv: |
+        #   p, role:org-admin, applications, *, */*, allow
+        #   p, role:org-admin, clusters, get, *, allow
+        #   p, role:org-admin, repositories, *, *, allow
+        #   p, role:org-admin, logs, get, *, allow
+        #   p, role:org-admin, exec, create, */*, allow
+        #   g, your-github-org:your-team, role:org-admin
+    controller:
+      replicas: 1
+    redis-ha:
+      enabled: true
+    server:
+      replicas: 2
+    repoServer:
+      replicas: 2
+    applicationSet:
+      replicas: 2

@@ -22,15 +22,14 @@ with lib;
         type = types.bool;
         default = false;
       };
-
-      extraFlags = mkOption {
-        type = types.listOf types.str;
-        default = [];
-      };
     };
 
     network = {
       hostname = mkOption {
+        type = types.str;
+      };
+
+      publicIP = mkOption {
         type = types.str;
       };
 
@@ -49,6 +48,16 @@ with lib;
       vlanID = mkOption {
         default = 4000;
         type = types.int;
+      };
+
+      clusterCIDR = mkdOption {
+        type = types.str;
+        default = "10.42.0.0/16";
+      };
+
+      serviceCIDR = mkdOption {
+        type = types.str;
+        default = "10.43.0.0/16";
       };
     };
   };

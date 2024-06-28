@@ -29,10 +29,10 @@
             };
             ceph = {
               size = "100%";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-              };
+#              content = {
+#                type = "filesystem";
+#                format = "ext4";
+#              };
             };
           };
         };
@@ -65,10 +65,10 @@
             };
             ceph = {
               size = "100%";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-              };
+#              content = {
+#                type = "filesystem";
+#                format = "ext4";
+#              };
             };
           };
         };

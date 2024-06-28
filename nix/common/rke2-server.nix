@@ -1,31 +1,38 @@
 { inputs, lib, config, pkgs, ... }:
 
 with lib;
+with pkgs;
 let
   cfg = config.local.rke2;
+  net = config.local.network;
   hostname = config.networking.hostName;
-  ciliumKubeProxy = pkgs.writeTextFile {
-    name = "rke2-cilium-config.yaml";
-    text = ''
-        apiVersion: helm.cattle.io/v1
-        kind: HelmChartConfig
-        metadata:
-          name: rke2-cilium
-          namespace: kube-system
-        spec:
-          valuesContent: |-
-            kubeProxyReplacement: true
-            k8sServiceHost: 127.0.0.1
-            k8sServicePort: 6443
-            hubble:
-              enabled: true
-              relay:
-                enabled: true
-              ui:
-                enabled: true
-            auto-direct-node-routes: true
-            direct-routing-device: vlan4000@ens4
-    '';
+
+  ciliumConfig = substituteAll {
+    src = ../helm/rke2-cilium-config.yaml;
+    hubbleEnabled = "true";
+    hubbleRelay = "true";
+    hubbleUI = "true";
+#    device = "${builtins.toString net.vlanID}@${net.privateNIC}";
+    gatewayAPI = "true";
+    privateCIDR = "${net.privateCIDR}";
+  };
+
+  argocd = substituteAll {
+    src = ../helm/argocd.yaml;
+    version = "3.35.4";
+  };
+
+  argocdConfig = substituteAll {
+    src = ../helm/argocd-config.yaml;
+  };
+
+  certManager = substituteAll {
+    src = ../helm/cert-manager.yaml;
+    version = "v1.15.1";
+  };
+
+  certManagerConfig = substituteAll {
+    src = ../helm/cert-manager-config.yaml;
   };
 in
 {
@@ -38,6 +45,11 @@ in
       tls-san:
         - ${hostname}.4amlunch.net
         - ${hostname}
+      cluster-cidr: ${net.clusterCIDR}
+      service-cidr: ${net.serviceCIDR}
+      etcd-expose-metrics: true
+      node-ip: ${net.privateIP}
+      node-external-ip: ${net.publicIP}
       '';
 
       mode = "0644";
@@ -47,13 +59,20 @@ in
   disabledModules = ["services/cluster/rke2/default.nix"];
   imports = ["${inputs.nixpkgs-brian}/nixos/modules/services/cluster/rke2/default.nix"];
 
+  systemd.tmpfiles.rules = [
+    "C /var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml 0644 root root - ${ciliumConfig}"
+    "C /var/lib/rancher/rke2/server/manifests/argocd.yaml 0644 root root - ${argocd}"
+    "C /var/lib/rancher/rke2/server/manifests/argocd-config.yaml 0644 root root - ${argocdConfig}"
+    "C /var/lib/rancher/rke2/server/manifests/cert-manager.yaml 0644 root root - ${certManager}"
+    "C /var/lib/rancher/rke2/server/manifests/cert-manager-config.yaml 0644 root root - ${certManagerConfig}"
+  ];
+
   services.rke2 = {
     enable = true;
     cni = "cilium";
-    ciliumConfig = ciliumKubeProxy;
+#    ciliumConfig = ciliumKubeProxy;
     role = cfg.role;
     tokenFile = cfg.tokenFile;
-    extraFlags = cfg.extraFlags;
     serverAddr = if !cfg.clusterInit then "https://${cfg.initMaster}:9345" else "";
     nodeTaint = [
       "CriticalAddonsOnly=true:NoExecute"

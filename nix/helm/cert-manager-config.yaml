@@ -1,0 +1,11 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: cert-manager
+  namespace: cert-manager
+spec:
+  valuesContent: |-
+    installCRDs: true
+    crds:
+      enabled: true
+    extraArgs: "{--enable-gateway-api}"
