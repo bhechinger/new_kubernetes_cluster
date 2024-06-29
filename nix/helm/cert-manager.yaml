@@ -1,8 +1,8 @@
 apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
-  namespace: kube-system
   name: cert-manager
+  namespace: kube-system
 spec:
   targetNamespace: cert-manager
   createNamespace: true

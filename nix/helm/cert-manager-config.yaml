@@ -5,7 +5,6 @@ metadata:
   namespace: cert-manager
 spec:
   valuesContent: |-
-    installCRDs: true
     crds:
       enabled: true
-    extraArgs: "{--enable-gateway-api}"
+      keep: true

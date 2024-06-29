@@ -5,6 +5,8 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
+    cluster:
+      name: @clusterName@
     kubeProxyReplacement: strict
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 6443
@@ -14,11 +16,26 @@ spec:
         enabled: @hubbleRelay@
       ui:
         enabled: @hubbleUI@
-#     auto-direct-node-routes: true
-#     direct-routing-device: @directRoutingDevice@
-#     cluster-cidr: @clusterCIDR@
     gatewayAPI:
       enabled: @gatewayAPI@
     ipv4NativeRoutingCIDR: @privateCIDR@
     routingMode: native
-
+    enableIPv4Masquerade: true
+    autoDirectNodeRoutes: true
+    devices: @privateNIC@
+    nodePort:
+      directRoutingDevice: @directRoutingDevice@
+    envoy:
+      enabled: true
+    annotateK8sNode: true
+    monitor:
+      enabled: true
+    prometheus:
+      enabled: true
+    bpf:
+      masquerade: true
+    ipMasqAgent:
+      enabled: true
+      config:
+        nonMasqueradeCIDRs:
+          - @privateCIDR@

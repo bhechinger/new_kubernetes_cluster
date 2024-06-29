@@ -16,6 +16,12 @@
     # devices = [ ];
   };
 
+  boot = {
+      kernelParams = [ "mitigations=off" ];
+      kernelModules = [ "cls_bpf" "sch_ingress" "algif_hash" "xt_TPROXY" "xt_CT" "xt_mark" "xt_socket" "sch_fq" ];
+      kernelPackages = pkgs.linuxKernel.packages.linux_6_8;
+  };
+
   environment.systemPackages = map lib.lowPrio [
     pkgs.curl
     pkgs.gitMinimal

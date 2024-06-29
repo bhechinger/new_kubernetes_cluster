@@ -19,21 +19,20 @@ spec:
               id: github
               name: GitHub
               config:
-                clientID: aabbccddeeff00112233
-                clientSecret: $dex.github.clientSecret # Alternatively $<some_K8S_secret>:dex.github.clientSecret
+                clientID: REDACTED
+                clientSecret: REDACTED
                 orgs:
-                  - name: your-github-org
+                  - name: 4amlunch
       params:
         server.insecure: true
       rbac:
-        policy.csv: ''
-        # policy.csv: |
-        #   p, role:org-admin, applications, *, */*, allow
-        #   p, role:org-admin, clusters, get, *, allow
-        #   p, role:org-admin, repositories, *, *, allow
-        #   p, role:org-admin, logs, get, *, allow
-        #   p, role:org-admin, exec, create, */*, allow
-        #   g, your-github-org:your-team, role:org-admin
+        policy.csv: |
+          g, 4amlunch:admin, role:org-admin
+          p, role:org-admin, applications, *, */*, allow
+          p, role:org-admin, clusters, get, *, allow
+          p, role:org-admin, repositories, *, *, allow
+          p, role:org-admin, logs, get, *, allow
+          p, role:org-admin, exec, create, */*, allow
     controller:
       replicas: 1
     redis-ha:

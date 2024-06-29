@@ -9,12 +9,15 @@ let
 
   ciliumConfig = substituteAll {
     src = ../helm/rke2-cilium-config.yaml;
+    clusterName = "hetzner";
     hubbleEnabled = "true";
     hubbleRelay = "true";
     hubbleUI = "true";
-#    device = "${builtins.toString net.vlanID}@${net.privateNIC}";
+    directRoutingDevice = "vlan${builtins.toString net.vlanID}@${net.privateNIC}";
     gatewayAPI = "true";
+    clusterCIDR = "${net.clusterCIDR}";
     privateCIDR = "${net.privateCIDR}";
+    privateNIC = "${net.privateNIC}";
   };
 
   argocd = substituteAll {
