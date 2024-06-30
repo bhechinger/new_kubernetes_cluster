@@ -18,6 +18,7 @@ let
     clusterCIDR = "${net.clusterCIDR}";
     privateCIDR = "${net.privateCIDR}";
     privateNIC = "${net.privateNIC}";
+    publicNIC = "${net.publicNIC}";
   };
 
   argocd = substituteAll {

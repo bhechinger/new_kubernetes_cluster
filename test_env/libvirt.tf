@@ -49,10 +49,12 @@ locals {
   # if hostname contains "m" - use default VAR for masters, otherwise modify VAR( or use another var- for images) for workers
   image_path    = var.rescue-image
   mem_local_var = [
-    for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB * 4)
+    #for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB * 4)
+    for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.ramMB : var.ramMB)
   ]
   cpu_local_var = [
-    for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.cpu : var.cpu * 2)
+    #for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.cpu : var.cpu * 2)
+    for name in local.vm_common_list_count :(strcontains(name, local.master) ? var.cpu : var.cpu)
   ]
   disk_size = [
     for name in local.vm_common_list_count :(strcontains(name, local.master) ? local.disk_master : local.disk_worker)

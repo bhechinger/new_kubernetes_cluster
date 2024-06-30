@@ -22,7 +22,7 @@ spec:
     routingMode: native
     enableIPv4Masquerade: true
     autoDirectNodeRoutes: true
-    devices: @privateNIC@
+    devices: @publicNIC@,@directRoutingDevice@
     nodePort:
       directRoutingDevice: @directRoutingDevice@
     envoy:
