@@ -26,3 +26,9 @@ for node in "${ADDITIONAL_NODES[@]}"; do
   echo "Deploying to ${node}"
   ./deploy "${node}"
 done
+
+echo "Waiting for kubernetes to be ready on final node (worker3)"
+wait_for_ready worker3 master1.yaml
+
+duration=${SECONDS}
+echo "Cluster deployment took $((duration / 60)) minutes and $((duration % 60)) seconds."

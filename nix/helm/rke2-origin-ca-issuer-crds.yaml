@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rke2-origin-ca-issuer-crds
+  namespace: kube-system
+spec:
+  bootstrap: true
+  version: @version@
+  chart: origin-ca-issuer-crds
+  repo: https://bhechinger.github.io/origin-ca-issuer-helm/

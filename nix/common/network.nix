@@ -10,6 +10,15 @@ in
     domain = "4amlunch.net";
     useDHCP = false;
 
+    bridges = {
+      "public" = {
+        interfaces = [ "${cfg.publicNIC}" ];
+      };
+      "private" = {
+        interfaces = [ "${vlan}" ];
+      };
+    };
+
     vlans = {
       "${vlan}" = {
         id = cfg.vlanID;
@@ -18,8 +27,8 @@ in
     };
 
     interfaces = {
-      "${cfg.publicNIC}".useDHCP = true;
-      "${vlan}".ipv4.addresses = [{
+      public.useDHCP = true;
+      private.ipv4.addresses = [{
         address = cfg.privateIP;
         prefixLength = 24;
       }];

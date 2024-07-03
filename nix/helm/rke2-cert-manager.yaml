@@ -1,7 +1,7 @@
 apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
-  name: cert-manager
+  name: rke2-cert-manager
   namespace: kube-system
 spec:
   targetNamespace: cert-manager
@@ -9,3 +9,7 @@ spec:
   version: @version@
   chart: cert-manager
   repo: https://charts.jetstack.io
+  valuesContent: |-
+    crds:
+      enabled: true
+      keep: true

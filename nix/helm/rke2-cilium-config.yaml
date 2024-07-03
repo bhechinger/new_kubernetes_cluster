@@ -5,6 +5,9 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
+    image:
+      repository: docker.io/wonko/cilium
+      tag: v1.15.6-brian5
     cluster:
       name: @clusterName@
     kubeProxyReplacement: strict
@@ -22,9 +25,9 @@ spec:
     routingMode: native
     enableIPv4Masquerade: true
     autoDirectNodeRoutes: true
-    devices: @publicNIC@,@directRoutingDevice@
+    devices: @publicNIC@ @privateNIC@
     nodePort:
-      directRoutingDevice: @directRoutingDevice@
+      directRoutingDevice: @privateNIC@
     envoy:
       enabled: true
     annotateK8sNode: true
@@ -34,6 +37,7 @@ spec:
       enabled: true
     bpf:
       masquerade: true
+      vlanBypass: @vlanID@
     ipMasqAgent:
       enabled: true
       config:

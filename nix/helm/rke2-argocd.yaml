@@ -1,9 +1,14 @@
 apiVersion: helm.cattle.io/v1
-kind: HelmChartConfig
+kind: HelmChart
 metadata:
-  name: argocd
-  namespace: argocd
+  name: rke2-argocd
+  namespace: kube-system
 spec:
+  targetNamespace: argocd
+  createNamespace: true
+  version: @version@
+  chart: argo-cd
+  repo: https://argoproj.github.io/argo-helm
   valuesContent: |-
     global:
       domain: argocd.4amlunch.net
