@@ -4,4 +4,3 @@
 **/.terraform/
 **/terraform.tfstate*
 **/.terraform.tfstate.lock.info
-nix/master1.yaml
