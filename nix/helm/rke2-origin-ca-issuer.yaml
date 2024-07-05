@@ -1,17 +1,15 @@
 apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
-  name: rke2-cert-manager
+  name: rke2-origin-ca-issuer
   namespace: kube-system
 spec:
   targetNamespace: cert-manager
   createNamespace: true
   version: @version@
-  chart: cert-manager
-  repo: https://charts.jetstack.io
+  chart: origin-ca-issuer
+  repo: https://bhechinger.github.io/origin-ca-issuer-helm/
   valuesContent: |-
     crds:
       enabled: true
       keep: true
-    certmanager:
-      serviceAccountName: "rke2-cert-manager" # Until I figure out how to get RKE2's HelmChart CRD to drop the rke2

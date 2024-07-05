@@ -15,7 +15,7 @@ let
     hubbleEnabled = "true";
     hubbleRelay = "true";
     hubbleUI = "true";
-    gatewayAPI = "true";
+    gatewayAPI = "false";
     privateCIDR = net.privateCIDR;
     publicNIC = "public";
     privateNIC = "private";
@@ -32,9 +32,14 @@ let
     version = "v1.15.1";
   };
 
-  originCA = substituteAll {
+  originCAIssuerCRDs = substituteAll {
     src = ../helm/rke2-origin-ca-issuer-crds.yaml;
     version = "0.1.1";
+  };
+
+  originCAIssuer = substituteAll {
+    src = ../helm/rke2-origin-ca-issuer.yaml;
+    version = "0.1.0";
   };
 in
 {
@@ -67,7 +72,8 @@ in
     "C /var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml 0644 root root - ${ciliumConfig}"
     "C /var/lib/rancher/rke2/server/manifests/rke2-argocd.yaml 0644 root root - ${argocd}"
     "C /var/lib/rancher/rke2/server/manifests/rke2-cert-manager.yaml 0644 root root - ${certManager}"
-    "C /var/lib/rancher/rke2/server/manifests/rke2-origin-ca-issuer-crds.yaml 0644 root root - ${originCA}"
+    "C /var/lib/rancher/rke2/server/manifests/rke2-origin-ca-issuer-crds.yaml 0644 root root - ${originCAIssuerCRDs}"
+    "C /var/lib/rancher/rke2/server/manifests/rke2-origin-ca-issuer.yaml 0644 root root - ${originCAIssuer}"
   ];
 
   services.rke2 = {

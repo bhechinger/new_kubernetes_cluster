@@ -5,9 +5,6 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
-    image:
-      repository: docker.io/wonko/cilium
-      tag: v1.15.6-brian5
     cluster:
       name: @clusterName@
     kubeProxyReplacement: strict
