@@ -3,6 +3,7 @@
 with lib;
 let
   cfg = config.local.rke2;
+  net = config.local.network;
 in
 {
   boot = {
@@ -15,6 +16,17 @@ in
       MAILADDR = wonko@4amlunch.net
       MAILFROM = mdadm@$4amlunch.net
       '';
+    };
+  };
+
+  environment.etc = {
+    "rancher/rke2/config.yaml" = {
+      text = ''
+      node-ip: ${net.privateIP}
+      node-external-ip: ${net.publicIP}
+      '';
+
+      mode = "0644";
     };
   };
 

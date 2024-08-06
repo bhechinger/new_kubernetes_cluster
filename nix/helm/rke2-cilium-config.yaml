@@ -5,6 +5,10 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
+    bandwidthManager:
+      enabled: true
+      bbr: true
+    enableCiliumEndpointSlice: true
     cluster:
       name: @clusterName@
     kubeProxyReplacement: strict
@@ -18,6 +22,8 @@ spec:
         enabled: @hubbleUI@
     gatewayAPI:
       enabled: @gatewayAPI@
+    externalIPs:
+      enabled: true
     ipv4NativeRoutingCIDR: @privateCIDR@
     routingMode: native
     enableIPv4Masquerade: true
@@ -35,6 +41,7 @@ spec:
     bpf:
       masquerade: true
       vlanBypass: @vlanID@
+      hostLegacyRouting: false
     ipMasqAgent:
       enabled: true
       config:

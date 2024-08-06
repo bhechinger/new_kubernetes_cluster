@@ -15,7 +15,7 @@ let
     hubbleEnabled = "true";
     hubbleRelay = "true";
     hubbleUI = "true";
-    gatewayAPI = "false";
+    gatewayAPI = "true";
     privateCIDR = net.privateCIDR;
     publicNIC = "public";
     privateNIC = "private";
@@ -40,6 +40,11 @@ let
   originCAIssuer = substituteAll {
     src = ../helm/rke2-origin-ca-issuer.yaml;
     version = "0.1.0";
+  };
+
+  gatewayAPICRDs = substituteAll {
+    src = ../helm/rke2-gatewayapi-crds.yaml;
+    version = "1.0.0";
   };
 in
 {
@@ -74,6 +79,7 @@ in
     "C /var/lib/rancher/rke2/server/manifests/rke2-cert-manager.yaml 0644 root root - ${certManager}"
     "C /var/lib/rancher/rke2/server/manifests/rke2-origin-ca-issuer-crds.yaml 0644 root root - ${originCAIssuerCRDs}"
     "C /var/lib/rancher/rke2/server/manifests/rke2-origin-ca-issuer.yaml 0644 root root - ${originCAIssuer}"
+    "C /var/lib/rancher/rke2/server/manifests/rke2-gatewayapi-crds.yaml 0644 root root - ${gatewayAPICRDs}"
   ];
 
   services.rke2 = {

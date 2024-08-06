@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rke2-gateway-api-crds
+  namespace: kube-system
+spec:
+  bootstrap: true
+  version: @version@
+  chart: gateway-api-crds
+  repo: https://bhechinger.github.io/origin-ca-issuer-helm/
