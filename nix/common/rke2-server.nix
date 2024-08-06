@@ -71,7 +71,7 @@ in
   };
 
   disabledModules = ["services/cluster/rke2/default.nix"];
-  imports = ["${inputs.nixpkgs-brian}/nixos/modules/services/cluster/rke2/default.nix"];
+  imports = ["${inputs.nixpkgs-cilium}/nixos/modules/services/cluster/rke2/default.nix"];
 
   systemd.tmpfiles.rules = [
     "C /var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml 0644 root root - ${ciliumConfig}"
@@ -84,6 +84,7 @@ in
 
   services.rke2 = {
     enable = true;
+    package = inputs.nixpkgs-rke2.rke2_latest;
     cni = "cilium";
     role = cfg.role;
     tokenFile = cfg.tokenFile;
